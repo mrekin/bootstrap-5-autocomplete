@@ -84,7 +84,8 @@ class Autocomplete {
   }
 
   createItems() {
-    const lookup = this.field.value;
+    var words = this.field.value.split(' ');
+    const lookup = words[words.length - 1];
     if (lookup.length < this.options.treshold) {
       this.dropdown.hide();
       return 0;
@@ -113,10 +114,11 @@ class Autocomplete {
 
     this.field.nextSibling.querySelectorAll('.dropdown-item').forEach((item) => {
       item.addEventListener('click', (e) => {
-        let dataLabel = e.target.getAttribute('data-label');
-        let dataValue = e.target.getAttribute('data-value');
+        let dataLabel = e.currentTarget.getAttribute('data-label');
+        let dataValue = e.currentTarget.getAttribute('data-value');
 
-        this.field.value = dataLabel;
+        //this.field.value = dataLabel;
+        this.field.value = this.field.value.replace(new RegExp(lookup + '$'), dataLabel);
 
         if (this.options.onSelectItem) {
           this.options.onSelectItem({
