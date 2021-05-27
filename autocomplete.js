@@ -84,8 +84,9 @@ class Autocomplete {
   }
 
   createItems() {
-    var words = this.field.value.split(' ');
-    const lookup = words[words.length - 1];
+    const lookupObj = getWordAt(this.field.value, this.field.selectionStart);
+    const lookup = lookupObj.lookup;
+
     if (lookup.length < this.options.treshold) {
       this.dropdown.hide();
       return 0;
@@ -117,8 +118,14 @@ class Autocomplete {
         let dataLabel = e.currentTarget.getAttribute('data-label');
         let dataValue = e.currentTarget.getAttribute('data-value');
 
-        //this.field.value = dataLabel;
-        this.field.value = this.field.value.replace(new RegExp(lookup + '$'), dataLabel);
+        this.field.value = this.field.value.substring(0,lookupObj.start) +
+                            dataLabel +
+                            this.field.value.substring(lookupObj.stop);
+              
+        //Not best way to move caret
+        this.field.selectionStart = (this.field.value.substring(0,lookupObj.start) +
+                                      dataLabel).length;
+        this.field.selectionEnd = this.field.selectionStart; 
 
         if (this.options.onSelectItem) {
           this.options.onSelectItem({
@@ -152,4 +159,24 @@ function ce(html) {
  */
 function insertAfter(elem, refElem) {
   return refElem.parentNode.insertBefore(elem, refElem.nextSibling);
+}
+
+function getWordAt (str, pos) {
+
+  // Perform type conversions.
+  str = String(str);
+  pos = Number(pos) >>> 0;
+
+  // Search for the word's beginning and end.
+  var left = str.slice(0, pos).search(/\S+$/),
+      right = str.slice(pos).search(/\s|$/) + pos;
+
+  // Return the word, using the located bounds to extract it from the string.
+  lookupObj ={}
+  lookupObj['start'] = left;
+  lookupObj['stop'] = right;
+  lookupObj['lookup'] = str.slice(left, right)
+
+  return lookupObj;
+
 }
