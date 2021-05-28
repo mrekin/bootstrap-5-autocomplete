@@ -2,6 +2,8 @@
 
 This is a rewrite of https://github.com/Honatas/bootstrap-4-autocomplete for bootstrap v5.
 
+Update: added to original ability to autocomplete input in any position in input
+
 ### Example
 
 ```js
